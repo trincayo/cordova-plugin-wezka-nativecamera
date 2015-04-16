@@ -45,6 +45,21 @@ import android.hardware.Camera.Parameters;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.PictureCallback;
 import android.widget.TextView;
+//---------manuel
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URLConnection;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Matrix;
+
+//--fin manuel
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -82,6 +97,10 @@ public class CameraActivity extends Activity implements SensorEventListener {
     private int screenHeight;
 
     private float viewfinderHalfPx;
+	//--- manuel
+	 String url;
+    ImageView marco;
+	//--- fin manuel
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,6 +114,13 @@ public class CameraActivity extends Activity implements SensorEventListener {
         final Button flashButton = (Button) findViewById(getResources().getIdentifier("flashButton", "id", getPackageName()));
         final Button captureButton = (Button) findViewById(getResources().getIdentifier("captureButton", "id", getPackageName()));
         final ImageView viewfinder = (ImageView) findViewById(getResources().getIdentifier("viewfinder", "id", getPackageName()));
+		//--manuel
+		//url = "http://www.dinamix.org/manpan/MARCOS/aa/marco1.png";
+		this.url = (String) getIntent().getExtras().getString("urlMarco");
+		marco = (ImageView) findViewById(getResources().getIdentifier("marco", "id", getPackageName()));
+		new FetchItems().execute();
+		
+		//fin manuel
         final RelativeLayout focusButton = (RelativeLayout) findViewById(getResources().getIdentifier("viewfinderArea", "id", getPackageName()));
         final int imgFlashNo = getResources().getIdentifier("@drawable/btn_flash_no", null, getPackageName());
         final int imgFlashAuto = getResources().getIdentifier("@drawable/btn_flash_auto", null, getPackageName());
@@ -556,8 +582,70 @@ public class CameraActivity extends Activity implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // TODO Auto-generated method stub
     }
+	//-- Manuel
+	 private class FetchItems extends AsyncTask<String, Bitmap, Bitmap> {
 
+        protected Bitmap doInBackground(String... params) {
+
+            //Descargamos la imagen en bitmap y la almacenamos
+            Bitmap imagenBitmap = downloadImage(url);
+
+            //Este return enviara la imagen al siguiente proceso, onPostExecute
+            return imagenBitmap;
+        }
+
+        protected void onPostExecute(Bitmap imagen) {
+            //Colocamos la imagen que hemos obtenido en el ImageView
+            try {
+                //marco.setImageBitmap(imagen);
+				if (imagen.getWidth()> imagen.getHeight()){
+					Matrix mat = new Matrix();
+			                mat.postRotate(90);
+			                imagen = Bitmap.createBitmap(imagen, 0, 0,
+			  imagen.getWidth(), imagen.getHeight(),
+			  mat, true);
+				}
+				
+				marco.setBackground(new BitmapDrawable(imagen));
+            } catch (Exception e) {}
+        }
+
+        private Bitmap downloadImage(String url) {
+            Bitmap bitmap = null;
+            InputStream stream = null;
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inSampleSize = 1;
+
+            try {
+                stream = getHttpConnection(url);
+                bitmap = BitmapFactory.
+                        decodeStream(stream, null, bmOptions);
+                //stream.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        private InputStream getHttpConnection(String urlString) throws IOException {
+            InputStream stream = null;
+            URL url = new URL(urlString);
+            URLConnection connection = url.openConnection();
+
+            try {
+                HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                httpConnection.setRequestMethod("GET");
+                httpConnection.connect();
+
+                if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    stream = httpConnection.getInputStream();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return stream;
+        }
+    }
+	//--Fin Manuel
+	
 }
-
-
-

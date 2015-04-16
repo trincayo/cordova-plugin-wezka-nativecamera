@@ -74,7 +74,9 @@ public class NativeCameraLauncher extends CordovaPlugin {
 	private static final String _DATA = "_data";
 	private CallbackContext callbackContext;
 	private String date = null;
-
+	//manuel
+	String urlMarco  = "";
+    //fin manuel
 	public NativeCameraLauncher() {
 	}
 
@@ -95,10 +97,14 @@ public class NativeCameraLauncher extends CordovaPlugin {
 				this.targetHeight = args.getInt(4);
 				this.targetWidth = args.getInt(3);
 				this.mQuality = args.getInt(0);
+				//-- manuel
+				this.urlMarco = args.getString(12);
+				//-- fin manuel
 				this.takePicture();
 				PluginResult r = new PluginResult(PluginResult.Status.NO_RESULT);
 				r.setKeepCallback(true);
 				callbackContext.sendPluginResult(r);
+				
 				return true;
 			}
 			return false;
@@ -115,6 +121,9 @@ public class NativeCameraLauncher extends CordovaPlugin {
 		this.photo = createCaptureFile();
 		this.imageUri = Uri.fromFile(photo);
 		intent.putExtra(MediaStore.EXTRA_OUTPUT, this.imageUri);
+		//manuel
+		intent.putExtra("urlMarco", this.urlMarco);
+		//--fin manuel
 		this.cordova.startActivityForResult((CordovaPlugin) this, intent, 1);
 	}
 

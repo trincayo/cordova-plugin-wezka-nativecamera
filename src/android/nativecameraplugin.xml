@@ -10,6 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal" />
+	<RelativeLayout
+        android:id="@+id/marcoArea"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="#00000000">
+
+        <ImageView
+            android:id="@+id/marco"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent" />
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/linearLayout"
@@ -63,5 +77,6 @@
             android:layout_width="72dp" />
 
     </RelativeLayout>
+	
 
 </RelativeLayout>

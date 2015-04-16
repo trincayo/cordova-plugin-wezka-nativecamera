@@ -69,9 +69,9 @@
         <source-file src="res/btn_flash_no.png" target-dir="res/drawable" />
         <source-file src="res/btn_flash_auto.png" target-dir="res/drawable" />
         <source-file src="res/viewfinder.png" target-dir="res/drawable" />
-         <!-- manuel -->
-		<source-file src="res/marco.png" target-dir="res/drawable" /> 
-		 <!-- fin manuel -->
+        <!-- trincayo -->
+	<source-file src="res/marco.png" target-dir="res/drawable" /> 
+	<!-- trincayo -->
 
         <js-module src="www/CameraPopoverHandle.js" name="CameraPopoverHandle">
             <clobbers target="CameraPopoverHandle" />

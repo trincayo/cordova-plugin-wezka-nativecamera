@@ -11,7 +11,8 @@
         distributed under the License is distributed on an "AS IS" BASIS,
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
-        limitations under the License.              
+        limitations under the License.  
+Trincayo: Rotation of frames		
  */
 
 package org.wbt11a.nativecamera;
@@ -99,6 +100,9 @@ public class CameraActivity extends Activity implements SensorEventListener {
     private float viewfinderHalfPx;
 	//--- manuel
 	 String url;
+	 String url_marco_horizontal;
+	 String url_marco_vertical;
+	 Bitmap[] misMarcos = new Bitmap[2];
     ImageView marco;
 	//--- fin manuel
 
@@ -116,9 +120,15 @@ public class CameraActivity extends Activity implements SensorEventListener {
         final ImageView viewfinder = (ImageView) findViewById(getResources().getIdentifier("viewfinder", "id", getPackageName()));
 		//--manuel
 		//url = "http://www.dinamix.org/manpan/MARCOS/aa/marco1.png";
+		
 		this.url = (String) getIntent().getExtras().getString("urlMarco");
+		String url0 = url.substring(0,url.lastIndexOf('/')+1)+"marco1.png"; //"http://www.dinamix.org/manpan/MARCOS/aa/marco1.png";
+		String url1 = url.substring(0,url.lastIndexOf('/')+1)+"marco2.png";
 		marco = (ImageView) findViewById(getResources().getIdentifier("marco", "id", getPackageName()));
-		new FetchItems().execute();
+		//new FetchItems().execute();
+		new descargaMarcos().execute(url0,"0");
+		new descargaMarcos().execute(url1,"1");
+		
 		
 		//fin manuel
         final RelativeLayout focusButton = (RelativeLayout) findViewById(getResources().getIdentifier("viewfinderArea", "id", getPackageName()));
@@ -575,7 +585,11 @@ public class CameraActivity extends Activity implements SensorEventListener {
             }
 
         }
-
+		if (degrees==0 || degrees ==180){
+			marco.setBackground(new BitmapDrawable(misMarcos[0]));
+		}else{
+			marco.setBackground(new BitmapDrawable(misMarcos[1]));
+		}
     }
 
     @Override
@@ -584,7 +598,8 @@ public class CameraActivity extends Activity implements SensorEventListener {
     }
 	//-- Manuel
 	 private class FetchItems extends AsyncTask<String, Bitmap, Bitmap> {
-
+		 
+		
         protected Bitmap doInBackground(String... params) {
 
             //Descargamos la imagen en bitmap y la almacenamos
@@ -607,6 +622,73 @@ public class CameraActivity extends Activity implements SensorEventListener {
 				}
 				
 				marco.setBackground(new BitmapDrawable(imagen));
+            } catch (Exception e) {}
+        }
+
+        private Bitmap downloadImage(String url) {
+            Bitmap bitmap = null;
+            InputStream stream = null;
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inSampleSize = 1;
+
+            try {
+                stream = getHttpConnection(url);
+                bitmap = BitmapFactory.
+                        decodeStream(stream, null, bmOptions);
+                //stream.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        private InputStream getHttpConnection(String urlString) throws IOException {
+            InputStream stream = null;
+            URL url = new URL(urlString);
+            URLConnection connection = url.openConnection();
+
+            try {
+                HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                httpConnection.setRequestMethod("GET");
+                httpConnection.connect();
+
+                if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    stream = httpConnection.getInputStream();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return stream;
+        }
+    }
+	//============================
+	private class descargaMarcos extends AsyncTask<String, Bitmap, Bitmap> {
+		 
+		private int numero = 1;
+        protected Bitmap doInBackground(String... params) {
+
+            //Descargamos la imagen en bitmap y la almacenamos
+            Bitmap imagenBitmap = downloadImage(params[0]);
+			numero = Integer.parseInt(params[1]);
+
+            //Este return enviara la imagen al siguiente proceso, onPostExecute
+            return imagenBitmap;
+        }
+
+        protected void onPostExecute(Bitmap imagen) {
+            //Colocamos la imagen que hemos obtenido en el ImageView
+            try {
+                //marco.setImageBitmap(imagen);
+				if (imagen.getWidth()> imagen.getHeight()){
+					Matrix mat = new Matrix();
+			                mat.postRotate(90);
+			                imagen = Bitmap.createBitmap(imagen, 0, 0,
+			  imagen.getWidth(), imagen.getHeight(),
+			  mat, true);
+				}
+				
+				misMarcos[numero] = imagen;
+				
             } catch (Exception e) {}
         }
 

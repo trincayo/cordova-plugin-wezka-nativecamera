@@ -59,7 +59,7 @@ import java.io.InputStreamReader;
 import java.net.URLConnection;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.Matrix;
-
+import android.content.res.AssetManager;
 //--fin manuel
 
 import java.io.File;
@@ -122,13 +122,24 @@ public class CameraActivity extends Activity implements SensorEventListener {
 		//url = "http://www.dinamix.org/manpan/MARCOS/aa/marco1.png";
 		
 		this.url = (String) getIntent().getExtras().getString("urlMarco");
+		
+		String[] arrayURLs = url.split(",");
+		
+		/*
 		String url0 = url.substring(0,url.lastIndexOf('/')+1)+"marco1.png"; //"http://www.dinamix.org/manpan/MARCOS/aa/marco1.png";
 		String url1 = url.substring(0,url.lastIndexOf('/')+1)+"marco2.png";
+		*/
+		
+		
+		
 		marco = (ImageView) findViewById(getResources().getIdentifier("marco", "id", getPackageName()));
 		//new FetchItems().execute();
+		/*
 		new descargaMarcos().execute(url0,"0");
 		new descargaMarcos().execute(url1,"1");
-		
+		*/
+		new descargaMarcos().execute(arrayURLs[0],"0");
+		new descargaMarcos().execute(arrayURLs[1],"1");
 		
 		//fin manuel
         final RelativeLayout focusButton = (RelativeLayout) findViewById(getResources().getIdentifier("viewfinderArea", "id", getPackageName()));
@@ -668,7 +679,25 @@ public class CameraActivity extends Activity implements SensorEventListener {
         protected Bitmap doInBackground(String... params) {
 
             //Descargamos la imagen en bitmap y la almacenamos
-            Bitmap imagenBitmap = downloadImage(params[0]);
+            Bitmap imagenBitmap = null;
+			
+			if (params[0].toLowerCase().startsWith("http")){
+			imagenBitmap = downloadImage(params[0]);
+			}else{
+					AssetManager manager = getAssets();
+		 
+				// Read a Bitmap from Assets
+				try {
+					InputStream open = manager.open(params[0]); //Es que no hay y ponemos la imagen de advertencia.
+					imagenBitmap = BitmapFactory.decodeStream(open);
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+			}	
+			
+			//imagenBitmap =BitmapFactory.decodeFile("res/horizontal.png");
+			
 			numero = Integer.parseInt(params[1]);
 
             //Este return enviara la imagen al siguiente proceso, onPostExecute

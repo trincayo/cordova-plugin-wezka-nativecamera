@@ -28,7 +28,7 @@ import java.util.Calendar;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-//import org.apache.cordova.ExifHelper;
+import org.apache.cordova.ExifHelper;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;

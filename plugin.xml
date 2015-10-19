@@ -71,6 +71,8 @@
         <source-file src="res/viewfinder.png" target-dir="res/drawable" />
         <!-- trincayo -->
 	<source-file src="res/marco.png" target-dir="res/drawable" /> 
+	<source-file src="res/vertical.png" target-dir="res/drawable" /> 
+	<source-file src="res/horizontal.png" target-dir="res/drawable" /> 
 	<!-- trincayo -->
 
         <js-module src="www/CameraPopoverHandle.js" name="CameraPopoverHandle">
